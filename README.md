@@ -1,9 +1,10 @@
-代码练习
-# OJ
+# 代码练习
+
+## OJ
 一些代码题
 
-#others
+## others
 杂七杂八的代码
 
-#kaggle
+## kaggle
 参加 kaggle 比赛的代码
