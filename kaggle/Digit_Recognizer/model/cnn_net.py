@@ -16,15 +16,25 @@ x_train , x_valid , y_train , y_valid = train_test_split(xs , ys , test_size = 0
 
 x_train = tf.convert_to_tensor(x_train, dtype=tf.float32) / 255.0
 x_valid = tf.convert_to_tensor(x_valid, dtype=tf.float32) / 255.0
+x_train = tf.reshape(x_train, (-1,28,28))
+x_valid = tf.reshape(x_valid, (-1,28,28))
 
 
 db = tf.data.Dataset.from_tensor_slices((x_train, y_train))
 db = db.batch(32).repeat(10)
 
-network = Sequential([layers.Dense(256, activation='relu'),
-                     layers.Dense(256, activation='relu'),
-                     layers.Dense(256, activation='relu'),
-                     layers.Dense(10)])
+network = tf.keras.Sequential([
+    layers.Conv2D(64 , (3,3) ,activation='relu', input_shape=(28, 28, 1)), 
+    layers.MaxPooling2D(2,2),
+    layers.Conv2D(128 , (3,3) ,activation='relu'), 
+    layers.MaxPooling2D(2,2),
+    layers.Flatten(),
+    layers.Dense(512, activation='relu'),
+    layers.Dropout(0.2),
+    layers.Dense(128, activation='relu'),
+    layers.Dropout(0.2),
+    layers.Dense(10 , activation = 'softmax')                   
+])
 network.build(input_shape=(None, 28*28))
 network.summary()
 
@@ -34,7 +44,7 @@ acc_meter = metrics.Accuracy()
 for step, (x,y) in enumerate(db):
 
     with tf.GradientTape() as tape:
-        # [b, 784] => [b, 10]
+        # [b, 28, 28] => [b, 10]
         out = network(x)
         # [b] => [b, 10]
         y = tf.reshape(y,-1)
@@ -61,8 +71,8 @@ for step, (x,y) in enumerate(db):
         print(step, 'valid acc:', acc_meter.result().numpy())
         acc_meter.reset_states()
 
-
 x_test = tf.convert_to_tensor(x_test, dtype=tf.float32) / 255.0
+x_test = tf.reshape(x_test, (-1,28,28))
 out = network(x_test)
 result = tf.argmax(out, axis=1).numpy()
 print(result.shape)
