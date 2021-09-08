@@ -21,7 +21,7 @@ def color_encode(color):
 
 def main():
     parser = argparse.ArgumentParser(epilog="example to use: python3 -picture_path picture_path.jpg -to_color red")
-    parser.add_argument('-picture_path')
+    parser.add_argument('-picture_path',required=True, help='Path to change backgroud file')
     parser.add_argument('-to_color', choices=['white', 'blue','red','black','yellow','green'], default='white')
     parser.add_argument('-save_path', default='change_bg_color.png')
     parser.add_argument('-erode_num',type=int, default=2, help='腐蚀迭代次数 默认值 2')
